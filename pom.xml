@@ -1,0 +1,191 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+  <!--
+     Copyright (c) 2010, SystemsX.ch and University of Zurich.  All rights reserved.
+
+     This file is part of the GridCertLib software project.
+     You may copy, distribute and modify this file under the terms of
+     the LICENSE.txt file at the root of the project directory tree.
+     
+     $Id$
+     -->
+
+    <groupId>gridcertlib</groupId>
+    <artifactId>gridcertlib</artifactId>
+    <version>1.0</version>
+
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>2.0.2</version>
+                <configuration>
+                  <!-- we use generics, so we need to pass the `-source 5` switch to javac -->
+                    <source>1.5</source>
+                    <target>1.5</target>
+                </configuration>
+            </plugin>
+            <plugin>
+              <groupId>org.mortbay.jetty</groupId>
+              <artifactId>maven-jetty-plugin</artifactId>
+              <version>6.1.25</version>
+              <!-- 
+              <artifactId>jetty-maven-plugin</artifactId>
+              <version>7.0.0.pre5</version>
+              -->
+              <configuration>
+                <!-- additional configuration for Jetty -->
+                <jettyConfig>src/main/resources/jetty.xml</jettyConfig>
+                <!-- Init parameters for the example servlets go here,
+                     so that they can be changed without altering the
+                     main package sources in src/main/webapp -->
+                <!-- <overrideWebXml>src/main/resources/override-web.xml</overrideWebXml> -->
+                <webAppConfig>
+                  <contextPath>/gridcertlib</contextPath>
+                  <overrideDescriptor>src/main/resources/override-web.xml</overrideDescriptor>
+                </webAppConfig>
+                <!--
+                <systemProperty>
+                  <name>DEBUG</name>
+                  <value>true</value>
+                </systemProperty>
+                -->
+              </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
+    <repositories>
+        <repository>
+            <id>internet2</id>
+            <name>Internet2 Releases</name>
+            <url>http://shibboleth.internet2.edu/downloads/maven2</url>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </repository>
+        <repository>
+            <id>switch</id>
+            <name>SWITCH Releases</name>
+            <url>http://www.switch.ch/grid/authz/docs/maven2/release</url>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </repository>
+        <repository>
+          <id>switchforge-snapshot</id>
+          <name>SWITCH forge SNAPSHOTs</name>
+          <url>https://forge.switch.ch/maven2/snapshot</url>
+          <snapshots>
+            <enabled>true</enabled>
+          </snapshots>
+        </repository>
+    </repositories>
+
+    <dependencies>
+      <!-- SWITCH idwsf-ecp API -->
+      <!--
+      <dependency>
+        <groupId>ch.SWITCH.aai.idwsf</groupId>
+        <artifactId>idwsf-ecp-wsc</artifactId>
+        <version>1.1.1</version>
+      </dependency>
+      -->
+      <dependency>
+        <groupId>ch.SWITCH.aai.idwsf</groupId>
+        <artifactId>idwsf-ecp-wsc</artifactId>
+        <version>1.2-SNAPSHOT</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opensaml</groupId>
+        <artifactId>opensaml</artifactId>
+        <version>2.3.1</version>
+      </dependency>
+      <dependency>
+        <groupId>commons-httpclient</groupId>
+        <artifactId>commons-httpclient</artifactId>
+        <version>3.1</version>
+      </dependency>
+      <!-- gLite VOMS Java API -->
+      <dependency>
+        <groupId>org.glite.voms</groupId>
+        <artifactId>vomsjapi</artifactId>
+        <version>1.9.17.1</version>
+      </dependency>
+      <!-- SWITCH SLCS API -->
+      <dependency>
+        <groupId>org.glite.slcs</groupId>
+        <artifactId>glite-slcs-ui</artifactId>
+        <version>1.4.3</version>
+      </dependency>
+      <dependency>
+        <groupId>org.glite.slcs</groupId>
+        <artifactId>glite-slcs-common</artifactId>
+        <version>1.4.3</version>
+      </dependency>
+      <dependency>
+        <!-- Globus JCoG / org.globus.gsi namespace -->
+        <groupId>org.globus</groupId>
+        <artifactId>cog-jglobus</artifactId>
+        <version>1.8.0</version>
+      </dependency>
+      <dependency>
+        <!-- org.ietf.jgss namespace -->
+        <groupId>cog</groupId>
+        <artifactId>jgss</artifactId> 
+        <version>1.8.0</version>
+      </dependency>
+      <!-- servlet API -->
+      <dependency>
+        <groupId>javax.servlet</groupId>
+        <artifactId>servlet-api</artifactId>
+        <version>2.5</version>
+      </dependency>
+      <!-- BouncyCastle crypto API (need at least version 1.37)
+           It's implcitly pulled in by the IDWSF-ECP stuff, but also
+           used explicitly in servlet.RenewAssertion -->
+      <!--
+      <dependency>
+        <groupId>bouncycastle</groupId>
+        <artifactId>bcprov-jdk14</artifactId>
+        <version>140</version>
+      </dependency>
+      -->
+      <!-- 
+         Logging.  Use SLF4J to channel all different Java APIs
+         into a single backend.
+        -->
+      <dependency>
+        <groupId>org.slf4j</groupId>
+        <artifactId>slf4j-api</artifactId>
+        <version>1.5.10</version>
+      </dependency>
+      <!-- bridge log4j (used by Globus JCoG) to SLF4J -->
+      <dependency>
+        <groupId>org.slf4j</groupId>
+        <artifactId>log4j-over-slf4j</artifactId>
+        <version>1.5.10</version>
+      </dependency>
+      <!-- bridge commons-logging (used by idwsf-ecp) to SLF4J -->
+      <dependency>
+        <groupId>org.slf4j</groupId>
+        <artifactId>jcl-over-slf4j</artifactId>
+        <version>1.5.10</version>
+      </dependency>
+      <!-- SLF4J backend -->
+      <dependency>
+        <groupId>org.slf4j</groupId>
+        <artifactId>slf4j-jdk14</artifactId>
+        <version>1.5.10</version>
+      </dependency>
+    </dependencies>
+
+</project>
