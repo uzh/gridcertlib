@@ -1,0 +1,203 @@
+<html>
+  <!--
+     Copyright (c) 2010, ETH Zurich and University of Zurich.  All rights reserved.
+
+     This file is part of the GridCertLib software project.
+     You may copy, distribute and modify this file under the terms of
+     the LICENSE.txt file at the root of the project directory tree.
+     
+     $Id$
+     -->
+  <head>
+    <title>Package org.swing.gridcertlib.servlet</title>
+  </head>
+ <body>
+  <p>Package org.swing.gridcertlib.servlet collects example servlets
+    to provide examples of how the GridCertLib code can be used in
+    portal applications.</p>
+
+  <p>Although fully functional, these servlets provide only
+    bare-bones functionality and little or no error checking; they
+    are not suitable for deployment in a production environment but
+    they should serve as a starting point to develop your code.</p>
+
+
+  <h2>Sample servlets overview</h2>
+  <p>
+    The provided sample servlets should run in any Java servlet
+    container. See <a href="#deployment">section</a> for configuration
+    instructions and a list of caveats for deployment.
+  </p>
+
+
+  <h3>SlcsInit</h3>
+
+  <p>The {@link ch.swing.gridcertlib.servlet.SlcsInit} servlet
+    extracts the SAML assertion URL from the Shibboleth headers,
+    downloads the assertion, and uses it to authenticate to a remote
+    SLCS service and get a new certificate/private key pair.  The key
+    is encrypted with a random password, and the certificate and
+    private key locations are printed in the response text.</p>
+
+
+  <h3>VomsProxyInit</h3>
+
+  <p>The {@link ch.swing.gridcertlib.servlet.VomsProxyInit} servlet
+    creates a VOMS proxy and stores it on the filesystem, in the
+    default store directory.  Required query parameters are {@code
+    vo}, {@code certificatePath}, {@code privateKeyPath} and {@code
+    privateKeyPassword}.</p>
+
+  <p>This servlet does not require any interaction with the Shibboleth
+    subsystem, and can be deployed unprotected.  It requires, however,
+    that the certificate and private key are available on the
+    filesystem.</p>
+
+
+  <h3>RenewAssertion</h3>
+
+  <p>The {@link ch.swing.gridcertlib.servlet.RenewAssertion} servlet
+    ensures that a fresh assertion is stored in the SP session cache.
+    It does so by redirecting the client browser to the SP session
+    logout URL, asking it to redirect back to the RenewAssertion
+    deployment URL (which must be Shibboleth-protected); finally, it
+    redirects the browser back to the referring URL.</p>
+
+  <p>A request URL to RenewAssertion must be properly formatted; the
+    convenience method {@link
+    ch.swing.gridcertlib.servlet.RenewAssertion#getRenewalUrl} is
+    provided to this purpose.</p>
+
+
+
+  <h2><a name="deployment">Deployment and configuration</a></h2>
+
+  <p>The provided sample servlets comply with
+    the <a href="http://www.jcp.org/en/jsr/detail?id=154">Java Servlet
+    2.4 specification (JSP-154)</a>, and will run in any Java servlet
+    container supporting JSP-154.</p>
+
+  
+  <h3>Shibboleth-related issues</h3>
+  <p>
+    The usual deployment scenario for Shibboleth-enabling Java
+    servlets is to configure an Apache2 server as a front-end (reverse
+    proxy) to the Java application server.  This is also the only
+    test scenario for the servlets.
+  </p>
+
+  <ul>
+    <li>
+      The GridCertLib library requires <em>Shibboleth delegation</em>
+      support.  This is only present
+      in <a href="https://spaces.internet2.edu/display/ShibuPortal/Configuring+Shibboleth+Delegation+for+a+Portal">Shibboleth
+      2</a>, starting with the IdP version 2.1.3; also the SP running
+      the SLCS service must be at least version 2.2 (for hosting the
+      web application, version 2.1 has been tested with success).</li>
+    <li>
+      In order to have access to the SAML2 assertion stored in the SP
+      session cache, the <tt>ShibExportAssertion On</tt> directive
+      must be present in the Apache configuration stanza (this
+      is <em>not</em> the default); the actual export URL and its
+      access restrictions are instead configured via
+      the <tt>shibboleth2.xml</tt> file.</li>
+    <li>
+      Apache must be given the <tt>ShibUseHeaders On</tt> directive,
+      in order to export Shibboleth authentication information to the
+      proxied Java web application. (Default is to make Shibboleth
+      information available through environment variables, which works
+      for CGI-BIN applications, but not for proxied web apps.)</li>
+  </ul>
+
+  <p>Example Apache configuration stanza:
+    <pre>
+        <Location /gridcertlib>
+              AuthType shibboleth
+              ShibRequireSession On
+              require valid-user
+              # make SAML2 assertion available to web apps
+              ShibExportAssertion On
+              # make Shibboleth info available through HTTP headers
+              ShibUseHeaders On
+              SetEnv Proxy-Chain-Auth on              
+        </Location>
+    </pre>
+
+
+    <h3>VOMS-related issues</h3>
+    <ul>
+      <li>
+        There's a fixed search path for the "vomses" file: it is first
+        looked up in <tt>GLITE_LOCATION/etc/vomses<tt>, the in the directories
+        specified by the Java System property <tt>VOMSES_LOCATION<tt> (must be a
+        colon-separated list of directories). So, the only way of
+        altering the search path is to set Java System properties
+        <tt>GLITE_LOCATION<tt> and/or <tt>VOMSES_LOCATION<tt> by adding a
+        <tt>-DVOMSES_LOCATION=...<tt> command-line argument to the JVM
+        invocation.</li>
+      <li>
+        The <tt>vomses<tt> file parser in the VOMS Java library is very fragile:
+        it will blow up if there are any excess spaces. Thus:
+        <ol>
+          <li>All fields in the <tt>vomses<tt> file must be separated by
+            exactly one space.</li>
+          <li>There can be no whitespace at the end of a line.</li>
+        </ol>
+      </li>
+      <li>
+        CA certificates are looked up into
+        <tt>/etc/grid-security/certificates<tt>, and this can only be changed by
+        setting the <tt>CADIR<tt> Java System property (i.e., with a
+        <tt>-DCADIR=...<tt> command-line option to the JVM).
+      </li>
+    </ul>
+
+
+    <h3>IDWSF-ECP related issues</h3>
+  <p>
+    The <tt>pemCACertificatesPath</tt> property used by the
+    IDWSF-ECP library must point to a file containing all the
+    trusted CA certificates (PEM-encoded) that are used for
+    verifying the SLCS server certificate. Apparently, the IDWSF-ECP
+    library won't use a OpenSSL CA directory
+    (e.g., <tt>/etc/grid-security/certificates</tt>) nor a JSSE
+    keystore.
+  </p>
+  
+  <p>
+    Also note that the IDWSF-ECP library (as of version 1.2-20101014),
+    does not support fecthing the assertion from <tt>https://</tt>
+    URLs, so you will need to make the Shibboleth assertion available
+    over <tt>http://</tt>
+  </p>
+
+
+  <h3>Sample servlet configuration</h3>
+  
+  <p>There are two distinct sources of configuration:
+    <ul>
+      <li>Configuration parameters for GridCertLib must be
+        provided in a {@code gridcertlib.properties} file: an example file
+        is provided in the library sources as {@code
+        src/webapp/resources/gridcertlib.properties}; see the API
+        documentation for classes {@link ch.swing.gridcertlib.SLCSFactory}
+        and {@link ch.swing.gridcertlib.GridProxyFactory} for a list of
+        required properties.</li>
+
+      <li>In addition, each servlet expects some servlet-specific
+        configuration data in the form of <em>servlet init
+        parameters</em>; consult the servlet class API doc for a list.
+        Init parameters can be set without modifying the servlet
+        distribution;
+        see <a href="http://stackoverflow.com/questions/1626018/defining-tomcat-servlet-init-parameters">this
+        StackOverflow post for Tomcat</a>
+        and <a href="http://docs.codehaus.org/display/JETTY/override+web.xml">Jetty
+        on-line doc</a>.</li>
+    </ul>
+  </p>
+
+  <address>
+    <a href="mailto:riccardo.murri@gmail.com">Riccardo Murri</a>
+  </address>
+</body>
+</html>

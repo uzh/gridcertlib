@@ -1,0 +1,74 @@
+<html>
+  <!--
+     Copyright (c) 2010, ETH Zurich and University of Zurich.  All rights reserved.
+
+     This file is part of the GridCertLib software project.
+     You may copy, distribute and modify this file under the terms of
+     the LICENSE.txt file at the root of the project directory tree.
+     
+     $Id$
+     -->
+  <head>
+    <title>Package org.swing.gridcertlib</title>
+</head>
+<body>
+  <p>
+    Package org.swing.gridcertlib provides services to create a
+    SLCS/X.509 certificate and a Grid proxy (optionally VOMS-enabled),
+    given the SAML2 assertion resulting from a Shibboleth2
+    authentication.
+  </p>
+
+  <p>
+    The library was written with a specific use-case in mind: use
+    within a portal or web application.  The programming interface has
+    thus been kept generic, in order to adapt to the various
+    programming paradigms used by different host products.  The only
+    hard requirement is that certificates and proxies can be stored on
+    the filesystem.
+  </p>
+
+  <p>
+    Package {@link ch.swing.gridcertlib.servlet} provides example
+    servlets (with fully-commented code) that show how the library can
+    be used.
+  </p>
+
+  <p>
+    <a href="servlet/package.html#deployment">Deployment and
+    configuration</a> caveats are discussed in the {@link
+    ch.swing.gridcertlib.servlet} package overview.
+  </p>
+
+
+    <h2>Programming interface</h2>
+  <p>The library package has two public entry points:
+    <dl>
+      <dt>{@link ch.swing.gridcertlib.SLCSFactory}</dt>
+      <dd>Façade to request SLCS certificates and store them to a
+        chosen location on the filesystem.</dd>
+      <dt>{@link ch.swing.gridcertlib.GridProxyFactory}</dt>
+      <dd>Façade to create Globus Toolkit proxy certificates
+        (optionally requiring VOMS extensions) and store them to a
+        temporary location on the filesystem.</dd>
+    </dl>
+    A single instance of each of these classes can generate multiple
+    SLCS certificates or proxies (possibly for different users) via
+    repeated invocation of the {@link ch.swing.gridcertlib.SLCSFactory#newSLCS} 
+    / {@link ch.swing.gridcertlib.GridProxyFactory#newProxy} methods.
+  </p>
+
+  <p>
+    Since the parameters used to configure the factory objects are
+    portal-wide globals and unlikely to change much over time, the
+    configuration can be passed in through a {@link java.util.Properties}
+    object, which can conveniently be loaded from a file (see an
+    example in the {@link ch.swing.gridcertlib.servlet.SlcsInit} servlet). 
+  </p>
+
+
+  <address>
+    <a href="mailto:riccardo.murri@gmail.com">Riccardo Murri</a>
+  </address>
+</body>
+</html>

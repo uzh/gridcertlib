@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app 
+   xmlns="http://java.sun.com/xml/ns/javaee" 
+   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+   xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" 
+   version="2.5">
+
+  <!-- the `slcs-init` servlet requests a new SLCS cert -->
+  <servlet>
+    <servlet-name>SlcsInit</servlet-name>
+    <servlet-class>ch.swing.gridcertlib.servlet.SlcsInit</servlet-class>
+    <!-- there are no location-independent defaults for the init
+         params, so they're commented out; see `resources/override-web.xml`
+         <init-param>
+           <param-name>VisibleURL</param-name>
+           <param-value>https://gc3-aai01.uzh.ch/gridcertlib/slcs-init</param-value>
+         </init-param>
+         <init-param>
+           <param-name>RenewAssertionURL</param-name>
+           <param-value>https://gc3-aai01.uzh.ch/gridcertlib/renew</param-value>
+         </init-param>
+         -->
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>SlcsInit</servlet-name>
+    <url-pattern>/slcs-init/*</url-pattern>
+  </servlet-mapping>
+
+  <!-- the `voms-proxy-init` servlet makes a new VOMS proxy -->
+  <servlet>
+    <servlet-name>VomsProxyInit</servlet-name>
+    <servlet-class>ch.swing.gridcertlib.servlet.VomsProxyInit</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>VomsProxyInit</servlet-name>
+    <url-pattern>/voms-proxy-init/*</url-pattern>
+  </servlet-mapping>
+
+  <!-- the `RenewAssertion` servlet requests a fresh SAML assertion
+       from the IdP -->
+  <servlet>
+    <servlet-name>RenewAssertion</servlet-name>
+    <servlet-class>ch.swing.gridcertlib.servlet.RenewAssertion</servlet-class>
+    <!-- there are no location-independent defaults for the init
+         params, so they're commented out; see `resources/override-web.xml`
+         <init-param>
+           <param-name>HomeURL</param-name>
+           <param-value>https://gc3-aai01.uzh.ch/gridcertlib/</param-value>
+         </init-param>
+         <init-param>
+           <param-name>ShibbolethLogoutURL</param-name>
+           <param-value>https://gc3-aai01.uzh.ch/Shibboleth.sso/Logout</param-value>
+         </init-param>
+         <init-param>
+           <param-name>RenewAssertionURL</param-name>
+           <param-value>https://gc3-aai01.uzh.ch/gridcertlib/renew</param-value>
+         </init-param>
+         -->
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>RenewAssertion</servlet-name>
+    <url-pattern>/renew/*</url-pattern>
+  </servlet-mapping>
+
+  <!-- a test servlet printing request info -->
+  <servlet>
+    <servlet-name>PrintHeaders</servlet-name>
+    <servlet-class>ch.swing.gridcertlib.servlet.PrintHeaders</servlet-class>
+    <init-param foo="1" />
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>PrintHeaders</servlet-name>
+    <url-pattern>/headers/*</url-pattern>
+  </servlet-mapping>
+</web-app>
