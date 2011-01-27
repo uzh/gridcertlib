@@ -1,4 +1,4 @@
-#summary Start here if you're new to GriCertLib
+#summary Start here if you're new to GridCertLib
 
 == The GridCertLib library ==
 
@@ -50,23 +50,23 @@ please follow the instructions in section "Prerequisites" above.
 GridCertLib is built using the standard Maven goals; 
 if you're new to Maven, here's a quick start:
 
-* To compile the library and make a jar file, issue the following
-  command: 
-  {{{
-  mvn jar:jar
-  }}}
-  The resulting `.jar` file can be found in directory `target/`.
- 
-* To build documentation, issue the following command:
-  {{{
-  mvn javadoc:javadoc
-  }}}
+  * To compile the library and make a jar file, issue the following command: 
+    {{{
+    mvn jar:jar
+    }}}
 
-  The HTML documentation can then be found in directory
-  `target/site/apidocs`.  The package `ch.swing.gridcertlib` overview
-  provides an introduction to the library usage; package
-  `ch.swing.gridcertlib.servlet` briefly introduces the example
-  servlets and discusses deployment requirements and caveats.
+    The resulting `.jar` file can be found in directory `target/`.
+ 
+  * To build documentation, issue the following command:
+    {{{
+    mvn javadoc:javadoc
+    }}}
+    
+    The HTML documentation can then be found in directory
+    `target/site/apidocs`.  The package `ch.swing.gridcertlib` overview
+    provides an introduction to the library usage; package
+    `ch.swing.gridcertlib.servlet` briefly introduces the example
+    servlets and discusses deployment requirements and caveats.
 
 
 
