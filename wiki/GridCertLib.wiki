@@ -19,7 +19,7 @@ GridCertLib features in a Java web services environment.
 <wiki:toc />
 
 
-== Installing and using GridCerLib ==
+== Installing and using GridCertLib ==
 
 === Prerequisites ===
 
