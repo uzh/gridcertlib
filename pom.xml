@@ -13,14 +13,22 @@
      $Id$
      -->
 
-  <name>GridCertLib-${pom.version}</name>
-  <groupId>gridcertlib</groupId>
+  <name>GridCertLib</name>
+  <url>http://gridcertlib.googlecode.com</url>
+  <description>
+    GridCertLib is a Java library providing services to create a
+    SLCS/X.509 certificate and a Grid proxy (optionally VOMS-enabled),
+    given the SAML2 assertion resulting from a Shibboleth2
+    authentication.
+
+    The library comes with some example servlets that provide sample
+    code to use the GridCertLib features in a Java web services
+    environment.
+  </description>
+
+  <groupId>ch.swing</groupId>
   <artifactId>gridcertlib</artifactId>
   <version>1.0</version>
-
-    <properties>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    </properties>
 
     <licenses>
         <license>
@@ -47,25 +55,36 @@
             <organization>SystemsX.ch</organization>
             <organizationUrl>http://www.systems.ch</organizationUrl>
             <roles>
-                <role>developer</role>
-            </roles>
-        </developer>
-        <developer>
-            <id>tschopp</id>
-            <name>Valery Tschopp</name>
-            <email>valery.tschopp@switch.ch</email>
-            <organization>SWITCH</organization>
-            <organizationUrl>http://www.switch.ch</organizationUrl>
-            <roles>
+                <role>project manager</role>
                 <role>developer</role>
             </roles>
         </developer>
     </developers>
 
+    <contributors>
+      <contributor>
+        <name>Valery Tschopp</name>
+        <email>valery.tschopp@switch.ch</email>
+        <organization>SWITCH</organization>
+        <organizationUrl>http://www.switch.ch</organizationUrl>
+      </contributor>
+    </contributors>
+
     <issueManagement>
         <system>GoogleCode Issue Tracker</system>
         <url>http://code.google.com/p/gridcertlib/issues/entry</url>
     </issueManagement>
+
+    <scm>
+      <connection>scm:svn:http://gridcertlib.googlecode.com/svn</connection>
+      <developerConnection>scm:svn:https://gridcertlib.googlecode.com/svn</developerConnection>
+      <tag>1.0</tag>
+      <url>http://code.google.com/p/gridcertlib/source/browse</url>
+    </scm>
+
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
 
     <build>
         <plugins>
@@ -146,8 +165,8 @@
                             <manifestSection>
                                 <name>ch/swing/gridcertlib/</name>
                                 <manifestEntries>
-                                    <Implementation-Title>${pom.artifactId}</Implementation-Title>
-                                    <Implementation-Version>${pom.version}</Implementation-Version>
+                                    <Implementation-Title>${project.artifactId}</Implementation-Title>
+                                    <Implementation-Version>${project.version}</Implementation-Version>
                                     <Implementation-Vendor>GC3/UZH, SystemsX.ch, SWITCH</Implementation-Vendor>
                                 </manifestEntries>
                             </manifestSection>
@@ -187,25 +206,34 @@
 
     <repositories>
         <repository>
-            <id>internet2</id>
-            <name>Internet2 Releases</name>
-            <url>http://shibboleth.internet2.edu/downloads/maven2</url>
-            <snapshots>
-                <enabled>false</enabled>
-            </snapshots>
+          <id>internet2</id>
+          <name>Internet2 Releases</name>
+          <url>http://shibboleth.internet2.edu/downloads/maven2</url>
+          <releases>
+            <enabled>true</enabled>
+          </releases>
+          <snapshots>
+            <enabled>false</enabled>
+          </snapshots>
         </repository>
         <repository>
-            <id>switchforge-release</id>
-            <name>SWITCHforge Releases</name>
-            <url>http://www.switch.ch/grid/authz/docs/maven2/release</url>
-            <snapshots>
-                <enabled>false</enabled>
-            </snapshots>
+          <id>switchforge-release</id>
+          <name>SWITCHforge Releases</name>
+          <url>http://www.switch.ch/grid/authz/docs/maven2/release</url>
+          <releases>
+            <enabled>true</enabled>
+          </releases>
+          <snapshots>
+            <enabled>false</enabled>
+          </snapshots>
         </repository>
         <repository>
           <id>switchforge-snapshot</id>
           <name>SWITCHforge Snapshots</name>
           <url>https://forge.switch.ch/maven2/snapshot</url>
+          <releases>
+            <enabled>false</enabled>
+          </releases>
           <snapshots>
             <enabled>true</enabled>
           </snapshots>
@@ -217,6 +245,7 @@
       <dependency>
         <groupId>ch.SWITCH.aai.idwsf</groupId>
         <artifactId>idwsf-ecp-wsc</artifactId>
+        <!-- at least 2010-10-14 -->
         <version>1.2-SNAPSHOT</version>
       </dependency>
       <dependency>
