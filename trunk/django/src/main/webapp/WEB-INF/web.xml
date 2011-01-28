@@ -8,7 +8,7 @@
   <!-- the `slcs-init` servlet requests a new SLCS cert -->
   <servlet>
     <servlet-name>SlcsInit</servlet-name>
-    <servlet-class>ch.swing.gridcertlib.servlet.SlcsInit</servlet-class>
+    <servlet-class>ch.swing.gridcertlib.django.SlcsInit</servlet-class>
     <!-- there are no location-independent defaults for the init
          params, so they're commented out; see `resources/override-web.xml`
          <init-param>
@@ -29,7 +29,7 @@
   <!-- the `voms-proxy-init` servlet makes a new VOMS proxy -->
   <servlet>
     <servlet-name>VomsProxyInit</servlet-name>
-    <servlet-class>ch.swing.gridcertlib.servlet.VomsProxyInit</servlet-class>
+    <servlet-class>ch.swing.gridcertlib.django.VomsProxyInit</servlet-class>
   </servlet>
   <servlet-mapping>
     <servlet-name>VomsProxyInit</servlet-name>
@@ -65,7 +65,7 @@
   <!-- a test servlet printing request info -->
   <servlet>
     <servlet-name>PrintHeaders</servlet-name>
-    <servlet-class>ch.swing.gridcertlib.servlet.PrintHeaders</servlet-class>
+    <servlet-class>ch.swing.gridcertlib.django.PrintHeaders</servlet-class>
     <init-param foo="1" />
   </servlet>
   <servlet-mapping>
