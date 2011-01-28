@@ -13,7 +13,7 @@
      http://gridcertlib.googlecode.com/
      -->
   <head>
-    <title>Package org.swing.gridcertlib.servlet</title>
+    <title>Package org.swing.gridcertlib.demo</title>
   </head>
  <body>
   <p>Package org.swing.gridcertlib.servlet collects example servlets
@@ -56,22 +56,6 @@
     subsystem, and can be deployed unprotected.  It requires, however,
     that the certificate and private key are available on the
     filesystem.</p>
-
-
-  <h3>RenewAssertion</h3>
-
-  <p>The {@link ch.swing.gridcertlib.servlet.RenewAssertion} servlet
-    ensures that a fresh assertion is stored in the SP session cache.
-    It does so by redirecting the client browser to the SP session
-    logout URL, asking it to redirect back to the RenewAssertion
-    deployment URL (which must be Shibboleth-protected); finally, it
-    redirects the browser back to the referring URL.</p>
-
-  <p>A request URL to RenewAssertion must be properly formatted; the
-    convenience method {@link
-    ch.swing.gridcertlib.servlet.RenewAssertion#getRenewalUrl} is
-    provided to this purpose.</p>
-
 
 
   <h2><a name="deployment">Deployment and configuration</a></h2>

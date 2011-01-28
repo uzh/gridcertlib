@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app 
+   xmlns="http://java.sun.com/xml/ns/javaee" 
+   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+   xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" 
+   version="2.5">
+<!-- This is another whole or partial `web.xml` file that resides
+     externally to the webapp, and is applied AFTER the webapp's
+     `WEB-INF/web.xml` file and can therefore override or add new
+     elements.  
+
+     It's the right place to provide parameters that
+     are specific to each deployment scenario, like paths, visible
+     URLs, etc.: a sysadmin can change a line in this file and should
+     not alter the distribution files in the `.war` or `WEB-INF`.
+  -->
+
+  <!-- the `SlcsInit` servlet requests a new SLCS cert -->
+  <servlet>
+    <servlet-name>SlcsInit</servlet-name>
+    <init-param>
+      <!-- Path to a 'gridcertlib.properties' file, containing
+        initialization properties for the GridCertLib library -->
+      <param-name>GridcertlibPropertiesFile</param-name>
+      <param-value>/home/murri/gridcertlib/src/main/resources/gridcertlib.properties</param-value>
+    </init-param>
+    <init-param>
+      <!-- URL that a client browser should visit to get to the
+           SlcsInit servlet (cannot be determined by the servlet
+           container if front-end proxying is used) -->
+      <param-name>VisibleURL</param-name>
+      <param-value>https://gc3-aai01.uzh.ch/gridcertlib/slcs-init</param-value>
+    </init-param>
+    <init-param>
+      <!-- URL that a client browser should visit to get to the
+           RenewAssertion servlet (cannot be determined by the servlet
+           container if front-end proxying is used) -->
+      <param-name>RenewAssertionURL</param-name>
+      <param-value>https://gc3-aai01.uzh.ch/gridcertlib/renew</param-value>
+    </init-param>
+  </servlet>
+
+  <!-- the `VomsProxyInit` servlet makes a new VOMS proxy -->
+  <servlet>
+    <servlet-name>VomsProxyInit</servlet-name>
+    <!-- Path to a 'gridcertlib.properties' file, containing
+         initialization properties for the GridCertLib library -->
+    <init-param>
+      <param-name>GridcertlibPropertiesFile</param-name>
+      <param-value>/home/murri/gridcertlib/src/main/resources/gridcertlib.properties</param-value>
+    </init-param>
+  </servlet>
+
+  <!-- the `RenewAssertion` servlet requests a fresh SAML assertion
+       from the IdP -->
+  <servlet>
+    <servlet-name>RenewAssertion</servlet-name>
+      <!-- URL that a client browser should visit to get to the
+           RenewAssertion servlet (cannot be determined by the servlet
+           container if front-end proxying is used) -->
+    <init-param>
+      <param-name>RenewAssertionURL</param-name>
+      <param-value>https://gc3-aai01.uzh.ch/gridcertlib/renew</param-value>
+    </init-param>
+    <!-- URL that client browsers visit to terminate the SP session.
+         Check the Shibboleth XML configuration file to determine it;
+         in the default Shibboleth config, this ends in
+         `/Shibboleth.sso/Logout`. -->
+    <init-param>
+      <param-name>ShibbolethLogoutURL</param-name>
+      <param-value>https://gc3-aai01.uzh.ch/Shibboleth.sso/Logout</param-value>
+    </init-param>
+  </servlet>
+
+</web-app>

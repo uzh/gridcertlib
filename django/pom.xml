@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <!--
+     Copyright (c) 2010-2011, SystemsX.ch and University of Zurich.  All rights reserved.
+
+     This file is part of the GridCertLib software project.
+     You may copy, distribute and modify this file under the terms of
+     the LICENSE.txt file at the root of the project directory tree.
+     
+     $Id$
+    -->
+
+  <name>GridCertLib Django support ${project.version}</name>
+  <groupId>ch.swing</groupId>
+  <artifactId>gridcertlib-django</artifactId>
+  <!-- gridcertlib-django version tracks gridcertlib-root version -->
+  <version>1.1-SNAPSHOT</version>
+
+  <parent>
+    <groupId>ch.swing</groupId>
+    <artifactId>gridcertlib</artifactId>
+    <version>1.1-SNAPSHOT</version>
+  </parent>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.mortbay.jetty</groupId>
+        <artifactId>maven-jetty-plugin</artifactId>
+        <version>6.1.25</version>
+        <configuration>
+          <!-- additional configuration for Jetty -->
+          <jettyConfig>src/main/etc/jetty.xml</jettyConfig>
+          <webAppConfig>
+            <contextPath>/gridcertlib</contextPath>
+            <!-- Init parameters for the example servlets go here,
+                 so that they can be changed without altering the
+                 main package sources in src/main/webapp -->
+            <overrideDescriptor>src/main/etc/override-web.xml</overrideDescriptor>
+          </webAppConfig>
+          <!--
+             <systemProperty>
+               <name>DEBUG</name>
+               <value>true</value>
+             </systemProperty>
+             -->
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+
+  <dependencies>
+    <!-- GridCert_lib -->
+    <dependency>
+      <groupId>ch.swing</groupId>
+      <artifactId>gridcertlib-core</artifactId>
+      <version>1.1-SNAPSHOT</version>
+    </dependency>
+    <!-- servlet API -->
+    <dependency>
+      <groupId>javax.servlet</groupId>
+      <artifactId>servlet-api</artifactId>
+      <version>2.5</version>
+      <scope>provided</scope>
+    </dependency>
+    <!-- BouncyCastle crypto API (need at least version 1.37)
+         It's implcitly pulled in by the IDWSF-ECP stuff, but also
+         used explicitly in servlet.RenewAssertion -->
+    <!--
+       <dependency>
+         <groupId>bouncycastle</groupId>
+         <artifactId>bcprov-jdk14</artifactId>
+         <version>140</version>
+       </dependency>
+       -->
+    <!-- 
+       Logging.  Use SLF4J to channel all different Java APIs
+       into a single backend.
+      -->
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-api</artifactId>
+      <version>1.5.10</version>
+    </dependency>
+    <!-- bridge log4j (used by Globus JCoG) to SLF4J -->
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>log4j-over-slf4j</artifactId>
+      <version>1.5.10</version>
+    </dependency>
+    <!-- bridge commons-logging (used by idwsf-ecp) to SLF4J -->
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>jcl-over-slf4j</artifactId>
+      <version>1.5.10</version>
+    </dependency>
+    <!-- SLF4J backend -->
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-jdk14</artifactId>
+      <version>1.5.10</version>
+    </dependency>
+  </dependencies>
+
+</project>
