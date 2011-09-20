@@ -113,15 +113,15 @@ def _modified_recently(path, timediff):
 
 def _set_secure_cookie(response, name, value):
     """
-    Set a secure cookie in a Django `HttpResponse` object `resp`.
+    Set a secure cookie in a Django `HttpResponse` object `response`.
     The cookie is marked as "secure" and "HttpOnly", if the Python
     library allows it (requires Python 2.6).
     """
     try:
-        resp.set_cookie(name, value, secure=True, httponly=True)
+        response.set_cookie(name, value, secure=True, httponly=True)
     except:
         # no support for 'HttpOnly', let's be content with "secure"
-        resp.set_cookie(name, value, secure=True)
+        response.set_cookie(name, value, secure=True)
     
 
 def _gridcertlib_required(view_fn, test_fn, next_url):
