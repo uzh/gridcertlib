@@ -140,7 +140,7 @@ public class VomsProxyInit extends HttpServlet
         }
 
         // extract the session key and password from a browser cookie
-        String sessionId = null;
+        String sessionKey = null;
         String privateKeyPassword = null;
         for (Cookie cookie : request.getCookies()) {
             final String name = cookie.getName();
@@ -148,13 +148,13 @@ public class VomsProxyInit extends HttpServlet
             if (name.equals("GridCertLib.privateKeyPassword")) {
                 privateKeyPassword = cookie.getValue();
             };
-            if (name.equals("GridCertLib.marker")) {
-                sessionId = cookie.getValue();
+            if (name.equals("GridCertLib.sessionKey")) {
+                sessionKey = cookie.getValue();
             };
         }
-        if (null == sessionId || sessionId.equals(""))
+        if (null == sessionKey || sessionKey.equals(""))
             throwError("VomsProxyInit.doGetOrPost", 
-                       "Missing 'GridCertLib.marker' cookie.");
+                       "Missing 'GridCertLib.sessionKey' cookie.");
         if (null == privateKeyPassword)
             throwError("VomsProxyInit.doGetOrPost", 
                        "Cannot read private key password cookie.");
@@ -169,10 +169,10 @@ public class VomsProxyInit extends HttpServlet
         // the HTTP request comes from a redirect issued by the Django
         // module and we are safe to process the "credentialsPath"
         // parameter.
-        File marker = new File(credentialsPath + "/__OK__" + sessionId);
+        File marker = new File(credentialsPath + "/__OK__" + sessionKey);
         if (! marker.exists()) {
             ctx_.log("SlcsInit.doGetOrPut(): Request for credentials store in '" + credentialsPath 
-                     + "', but it does not contain the marker file for session '" + sessionId 
+                     + "', but it does not contain the marker file for session '" + sessionKey 
                      + "'. Ignoring possibly forged request.");
             throwError("VomsProxyInit.doGetOrPost", 
                        "Credential location '" + credentialsPath 
