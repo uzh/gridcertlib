@@ -142,7 +142,8 @@ def _gridcertlib_required(view_fn, test_fn, next_url):
             request.session['GridCertLib.privateKeyPassword'] = User.objects.make_random_password(32)
         #request.session['GridCertLib.privateKeyPassword'] = 'xG3FSfBZUFFb2CwX9KZTxQ7XdPjZeSJn'
 
-        certdir =  os.path.join(settings.GRIDCERTLIB_ROOT, request.user.username, session_id)
+        certdir =  os.path.join(settings.GRIDCERTLIB_ROOT,
+                                request.user.username, session_id)
         if not os.path.exists(certdir):
             os.mkdir(certdir)
 
@@ -150,8 +151,8 @@ def _gridcertlib_required(view_fn, test_fn, next_url):
             return view_fn(request, *args, **kw)
         else:
             # create a marker file in the chosen usercert directory
-            key = _make_random_string()
-            marker = os.path.join(certdir, "__OK__" + key)
+            session_key = _make_random_string()
+            marker = os.path.join(certdir, "__OK__" + session_key)
             open(marker, 'w+b').close()
             # redirect to GridCertLib servlet
             self_url = urlquote(request.build_absolute_uri())
@@ -160,7 +161,7 @@ def _gridcertlib_required(view_fn, test_fn, next_url):
                                                       next=self_url))
             _set_secure_cookie(response, 'GridCertLib.privateKeyPassword',
                                request.session['GridCertLib.privateKeyPassword'])
-            _set_secure_cookie(response, 'GridCertLib.marker', key)
+            _set_secure_cookie(response, 'GridCertLib.sessionKey', session_key)
             return response
     return wrapper
 
