@@ -117,11 +117,13 @@ public class VomsProxyInit extends HttpServlet
         // If there is no `vo` parameter, you get a non-VOMS proxy.
         final String credentialsPath = request.getParameter("store");
         if (null == credentialsPath || "".equals(credentialsPath))
-            throwError("VomsProxyInit.doGetOrPost", "Missing required query parameter 'store' in HTTP request.");
+            throwError("VomsProxyInit.doGetOrPost", 
+                       "Missing required query parameter 'store' in HTTP request.");
 
         String nextUrl = request.getParameter("next");
         if (null == nextUrl || "".equals(nextUrl))
-            throwError("VomsProxyInit.doGetOrPost", "Missing required query parameter 'next' in HTTP request.");
+            throwError("VomsProxyInit.doGetOrPost", 
+                       "Missing required query parameter 'next' in HTTP request.");
         try {
             nextUrl = URLDecoder.decode(nextUrl, "UTF-8");
         }
@@ -137,21 +139,37 @@ public class VomsProxyInit extends HttpServlet
             ctx_.log("  VomsProxyInit: requesting FQAN: " + voname);
         }
 
+        // extract the session key and password from a browser cookie
+        String sessionId = null;
+        String privateKeyPassword = null;
+        for (Cookie cookie : request.getCookies()) {
+            final String name = cookie.getName();
+            // XXX: hard-coded value, should match what Python django-gridcertlib is doing
+            if (name.equals("GridCertLib.privateKeyPassword")) {
+                privateKeyPassword = cookie.getValue();
+            };
+            if (name.equals("GridCertLib.marker")) {
+                sessionId = cookie.getValue();
+            };
+        }
+        if (null == sessionId || sessionId.equals(""))
+            throwError("VomsProxyInit.doGetOrPost", 
+                       "Missing 'GridCertLib.marker' cookie.");
+        if (null == privateKeyPassword)
+            throwError("VomsProxyInit.doGetOrPost", 
+                       "Cannot read private key password cookie.");
+
         // NOTE: We need to prevent that an HTTP GET to
         // http://...?store=/some/dir makes us overwrite files in an
         // aribtrary directory.  Thus we rely on Django to have
-        // created a directory named "SHIB_SESSION_<val>" where
-        // <val> is the value of the HTTP "Shib-Session-ID" header.
-        // Since the Django code will only create that subdirectory in
-        // the intended directory, if it exists we can safely presume
-        // that the HTTP request comes from a redirect issued by the
-        // Django module and we are safe to process the
-        // "credentialsPath" parameter.
-        final String sessionId = request.getParameter("key");
-        if (null == sessionId || "".equals(sessionId))
-            throwError("VomsProxyInit.doGetOrPost", "Missing required query parameter 'key' in HTTP request");
-        ctx_.log("SlcsInit.doGet(): session key='" + sessionId +"'");
-        File marker = new File(credentialsPath + "/SESSION." + sessionId);
+        // created a file named "__OK__<val>" where <val> is the value
+        // passed through the "key" HTTP query paramater.  Since the
+        // Django code will only create that subdirectory in the
+        // intended directory, if it exists we can safely presume that
+        // the HTTP request comes from a redirect issued by the Django
+        // module and we are safe to process the "credentialsPath"
+        // parameter.
+        File marker = new File(credentialsPath + "/__OK__" + sessionId);
         if (! marker.exists()) {
             ctx_.log("SlcsInit.doGetOrPut(): Request for credentials store in '" + credentialsPath 
                      + "', but it does not contain the marker file for session '" + sessionId 
@@ -166,19 +184,7 @@ public class VomsProxyInit extends HttpServlet
         final String certificatePath = credentialsPath + "/usercert.pem";
         final String privateKeyPath = credentialsPath + "/userkey.pem";
 
-        // extract the password from a browser cookie
-        String privateKeyPassword = null;
-        for (Cookie cookie : request.getCookies()) {
-            // XXX: hard-coded value, should match what Python django-gridcertlib is doing
-            if ("GridCertLib.privateKeyPassword".equals(cookie.getName())) {
-                privateKeyPassword = cookie.getValue();
-                break;
-            }
-        }
-        if (null == privateKeyPassword)
-            throwError("VomsProxyInit.doGetOrPost", "Cannot read private key password cookie.");
         ctx_.log("VomsProxyInit: using private key password '" + privateKeyPassword + "'");
-
         // Note: the `org.glite.voms.contact.VOMSProxyInit` class
         // reads some parameters from the following environment
         // variables / Java System properties: (there appears to

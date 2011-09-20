@@ -199,21 +199,38 @@ public class SlcsInit extends HttpServlet
                        "' with UTF-8 encoding: " + ex.getMessage());
         }
 
+        // extract the session key and password from a browser cookie
+        String sessionId = null;
+        String privateKeyPassword = null;
+        for (Cookie cookie : request.getCookies()) {
+            final String name = cookie.getName();
+            // XXX: hard-coded value, should match what Python django-gridcertlib is doing
+            if (name.equals("GridCertLib.privateKeyPassword")) {
+                privateKeyPassword = cookie.getValue();
+            };
+            if (name.equals("GridCertLib.marker")) {
+                sessionId = cookie.getValue();
+            };
+        }
+        if (null == sessionId || sessionId.equals(""))
+            throwError("SlcsInit.doGetOrPost", 
+                       "Missing 'GridCertLib.marker' cookie.");
+        if (null == privateKeyPassword)
+            throwError("SlcsInit.doGetOrPost", 
+                       "Cannot read private key password cookie.");
+
         // NOTE: We need to prevent that an HTTP GET to
         // http://...?store=/some/dir makes us overwrite files in an
         // aribtrary directory.  Thus we rely on Django to have
-        // created a directory named "SHIB_SESSION_<val>" where
-        // <val> is the value of the HTTP "Shib-Session-ID" header.
-        // Since the Django code will only create that subdirectory in
-        // the intended directory, if it exists we can safely presume
-        // that the HTTP request comes from a redirect issued by the
-        // Django module and we are safe to process the
-        // "credentialsPath" parameter.
-        final String sessionId = request.getParameter("key");
-        if (null == sessionId || "".equals(sessionId))
-            throwError("VomsProxyInit.doGetOrPost", "Missing required query parameter 'key' in HTTP request");
+        // created a file named "__OK__<val>" where <val> is the value
+        // passed through the "key" HTTP query paramater.  Since the
+        // Django code will only create that subdirectory in the
+        // intended directory, if it exists we can safely presume that
+        // the HTTP request comes from a redirect issued by the Django
+        // module and we are safe to process the "credentialsPath"
+        // parameter.
         ctx_.log("SlcsInit.doGet(): session key='" + sessionId +"'");
-        File marker = new File(credentialsPath + "/SESSION." + sessionId);
+        File marker = new File(credentialsPath + "/__OK__" + sessionId);
         if (! marker.exists()) {
             ctx_.log("SlcsInit.doGetOrPut():"
                      + " Request for credentials store in '" + credentialsPath 
@@ -224,17 +241,6 @@ public class SlcsInit extends HttpServlet
                        + "' cannot be trusted. Request forged?");
         }
 
-        // extract the password from a browser cookie
-        String privateKeyPassword = null;
-        for (Cookie cookie : request.getCookies()) {
-            // XXX: hard-coded value, should match what Python django-gridcertlib is doing
-            if ("GridCertLib.privateKeyPassword".equals(cookie.getName())) {
-                privateKeyPassword = cookie.getValue();
-                break;
-            }
-        }
-        if (null == privateKeyPassword)
-            throwError("SlcsInit.doGetOrPost", "Cannot read private key password cookie.");
 
         // This is the core of the servlet: `SLCSFactory.newSLCS()`
         // generates a new SLCS certificate and writes it to disk, or
@@ -280,8 +286,6 @@ public class SlcsInit extends HttpServlet
                 returnUrl = visibleUrl_;
             try { 
                 returnUrl += "?" 
-                    + "key=" + URLEncoder.encode(sessionId, "UTF-8")
-                    + "&"
                     + "store=" + URLEncoder.encode(credentialsPath, "UTF-8")
                     + "&"
                     + "next=" + URLEncoder.encode(nextUrl, "UTF-8");

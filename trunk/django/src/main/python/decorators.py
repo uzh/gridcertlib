@@ -4,10 +4,10 @@
 Decorators for a Grid portal views.
 
 This file provides two decorators, `certificate_required` and
-`proxy_required`, that work just like the Django std `login_required`
-decorator, but check that the user accessing the view has a valid
-certificate (resp. Grid proxy) and redirect to the relevant
-GridCertLib servlet if not.
+`gridproxy_required`, that work just like the Django standard
+`login_required` decorator, but check that the user accessing the view
+has a valid certificate (resp. Grid proxy) and redirect to the
+relevant GridCertLib servlet if not.
 """
 __docformat__ = 'reStructuredText'
 
@@ -111,6 +111,18 @@ def _modified_recently(path, timediff):
         else:
             raise
 
+def _set_secure_cookie(response, name, value):
+    """
+    Set a secure cookie in a Django `HttpResponse` object `resp`.
+    The cookie is marked as "secure" and "HttpOnly", if the Python
+    library allows it (requires Python 2.6).
+    """
+    try:
+        resp.set_cookie(name, value, secure=True, httponly=True)
+    except:
+        # no support for 'HttpOnly', let's be content with "secure"
+        resp.set_cookie(name, value, secure=True)
+    
 
 def _gridcertlib_required(view_fn, test_fn, next_url):
     """
@@ -126,30 +138,29 @@ def _gridcertlib_required(view_fn, test_fn, next_url):
         session_id = request.session['GridCertLib.sessionId']
 
         # ensure the private key password is stored in the session
-        #if not request.session.has_key('GridCertLib.privateKeyPassword'):
-        #    request.session['GridCertLib.privateKeyPassword'] = User.objects.make_random_password(32)
-        request.session['GridCertLib.privateKeyPassword'] = 'xG3FSfBZUFFb2CwX9KZTxQ7XdPjZeSJn'
+        if not request.session.has_key('GridCertLib.privateKeyPassword'):
+            request.session['GridCertLib.privateKeyPassword'] = User.objects.make_random_password(32)
+        #request.session['GridCertLib.privateKeyPassword'] = 'xG3FSfBZUFFb2CwX9KZTxQ7XdPjZeSJn'
 
-        certdir =  os.path.join(settings.GRIDCERTLIB_ROOT, request.user.username)
+        certdir =  os.path.join(settings.GRIDCERTLIB_ROOT, request.user.username, session_id)
         if not os.path.exists(certdir):
             os.mkdir(certdir)
-
-        # get the Shibboleth session ID from HTTP headers; use it to
-        # create a marker file in the chosen usercert directory
-        marker = os.path.join(certdir, "SESSION." + session_id)
-        open(marker, 'w+b').close()
 
         if test_fn(certdir):
             return view_fn(request, *args, **kw)
         else:
+            # create a marker file in the chosen usercert directory
+            key = _make_random_string()
+            marker = os.path.join(certdir, "__OK__" + key)
+            open(marker, 'w+b').close()
             # redirect to GridCertLib servlet
             self_url = urlquote(request.build_absolute_uri())
             response = HttpResponseRedirect(_make_url(next_url, 
-                                                      key=session_id, 
                                                       store=certdir, 
                                                       next=self_url))
-            response.set_cookie('GridCertLib.privateKeyPassword',
-                                request.session['GridCertLib.privateKeyPassword'])
+            _set_secure_cookie(response, 'GridCertLib.privateKeyPassword',
+                               request.session['GridCertLib.privateKeyPassword'])
+            _set_secure_cookie(response, 'GridCertLib.marker', key)
             return response
     return wrapper
 
@@ -193,6 +204,7 @@ def certificate_required(view_fn,
 
 
 def gridproxy_required(view_fn,
+                       vo=None,
                        proxyinit_url=None,
                        redirect_field_name=REDIRECT_FIELD_NAME):
     """
@@ -203,10 +215,11 @@ def gridproxy_required(view_fn,
     Chain-calls the `certificate_required` decorator, to which the 
     optional `redirect_field_name` argument is passed unchanged.
     """
+    if vo is None:
+        vo = settings.GRIDCERTLIB_DEFAULT_VO
     if proxyinit_url is None:
         proxyinit_url = settings.GRIDCERTLIB_PROXYINIT_URL
-    # FIXME: hard-coded value!
-    proxyinit_url = _make_url(proxyinit_url, vo='smscg')
+    proxyinit_url = _make_url(proxyinit_url, vo=vo)
 
     def userproxy_is_valid(certdir):
         # XXX: instead of actually verifying that the proxy is
