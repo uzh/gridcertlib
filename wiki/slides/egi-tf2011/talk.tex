@@ -24,10 +24,8 @@
 \usepackage{hyperref}
 %\usepackage{pslatex}
 
-\newcommand{\cmd}{\begingroup \urlstyle{tt}\Url}  % see url.sty
-\newcommand{\file}{\begingroup \urlstyle{tt}\Url}  % see url.sty
 \newcommand{\+}{\vspace{1em}}
-
+\newcommand{\GridCertLib}{\href{http://gridcertlib.googlecode.com/}{{\em GridCertLib}}}
 
 \usetheme{egi}
 \begin{document}
@@ -154,7 +152,7 @@
 \end{frame}
 
 
-\section[Project overview]{GridCertLib operation}
+\section[Project overview]{\GridCertLib{} operation}
 
 \begin{frame}
   \frametitle{Architecture}
@@ -165,7 +163,7 @@
 \end{frame}
 
 \begin{frame}
-  \frametitle{GridCertLib operation (1)}
+  \frametitle{\GridCertLib{} operation (1)}
   \begin{center}
     \includegraphics[width=0.5\textwidth,viewport=0 300 600 650]{architecture1}
     \includegraphics[height=0.50\textheight]{wayf}
@@ -176,7 +174,7 @@
 
 
 \begin{frame}
-  \frametitle{GridCertLib operation (2)}
+  \frametitle{\GridCertLib{} operation (2)}
   \begin{center}
     \includegraphics[width=0.5\textwidth,viewport=0 300 600 650]{architecture2}
     \includegraphics[height=0.50\textheight]{idp}
@@ -190,16 +188,16 @@
 
 
 \begin{frame}
-  \frametitle{GridCertLib operation (3)}
+  \frametitle{\GridCertLib{} operation (3)}
   \begin{columns}
     \begin{column}{0.5\textwidth}
     \includegraphics[width=\linewidth,viewport=0 300 600 650]{architecture3}
     \end{column}
     \begin{column}{0.5\textwidth}
       \begin{center}
-        The portal calls GridCertLib.
+        The portal calls \GridCertLib{}.
         
-        \+ GridCertLib retrieves the SAML2 assertion (Shibboleth login
+        \+ \GridCertLib{} retrieves the SAML2 assertion (Shibboleth login
         data) from Apache's \texttt{mod\_shib}.
       \end{center}
     \end{column}
@@ -208,14 +206,14 @@
 
 
 \begin{frame}
-  \frametitle{GridCertLib operation (4)}
+  \frametitle{\GridCertLib{} operation (4)}
   \begin{columns}
     \begin{column}{0.5\textwidth}
     \includegraphics[width=\linewidth,viewport=0 300 600 650]{architecture4}
     \end{column}
     \begin{column}{0.5\textwidth}
       \begin{center}
-        GridCertLib generates an X.509 certificate, signs it using
+        \GridCertLib{} generates an X.509 certificate, signs it using
         SLCS, and then generates a VOMS proxy.
       \end{center}
     \end{column}
@@ -224,7 +222,7 @@
 
 
 \begin{frame}
-  \frametitle{Techinical issues (1)}
+  \frametitle{SLCS: Technical issues}
   
   {\bf Obtaining a user certificate requires delegation of the Shibboleth
   credentials to the SLCS login service.}
@@ -251,7 +249,7 @@
 
 
 \begin{frame}
-  \frametitle{GridCertLib operations (5)}
+  \frametitle{\GridCertLib{} operations (5)}
   \emph{Generate X.509 certificate:}
   \begin{columns}
     \begin{column}{0.4\textwidth}
@@ -275,7 +273,7 @@
 
 
 \begin{frame}
-  \frametitle{GridCertLib operations (6)}
+  \frametitle{\GridCertLib{} operations (6)}
   \begin{columns}
     \begin{column}{0.45\textwidth}
       \includegraphics[width=\linewidth]{mygamess}
@@ -285,7 +283,7 @@
         Store certificate and proxy on the disk, ready for use.
         \\
         {\footnotesize (Encrypted with a random password, which is
-          returned by the GridCertLib API.)}
+          returned by the \GridCertLib{} API.)}
       
         \+ {Users only interact via WWW, and
           passwords are sent to the IdP only (and only once per
@@ -309,9 +307,13 @@
     \item Requires some lengthy procedure to make login data
       compatible with the DB storage
     \end{itemize}
-  \item Insert calls to GridCertLib into the login code
+  \item Insert calls to \GridCertLib{} into the login code
     \begin{itemize}
     \item Java code calling Java code, no big issue
+    \end{itemize}
+  \item \emph{Disable} P-GRADE's native certificate handling
+    \begin{itemize}
+    \item Certificate management is now handled by \GridCertLib{}
     \end{itemize}
   \end{itemize}
 
@@ -324,7 +326,7 @@
 
   \emph{Issue:} How to bridge Python with Java?
   \begin{itemize}
-  \item Run \emph{GridCertLib} servlets in parallel with Django.
+  \item Run \GridCertLib{} servlets in parallel with Django.
   \item Use HTTP redirects to pass information back and forth.
   \end{itemize}
 
@@ -388,11 +390,15 @@
 \end{frame}
 
 
-\againframe{summary}
+%\againframe{summary}
 
 
 \section{Appendices}
-
+\begin{frame}
+  \begin{center}
+    {\Huge Additional material}
+  \end{center}
+\end{frame}
 
 \subsection{Shibboleth login workflow}
 
@@ -486,7 +492,7 @@
   
   \textbf{Shibboleth authentication data has a limited time validity}
   \begin{itemize}
-  \item By the time GridCertLib is called, it might have expired.
+  \item By the time \GridCertLib{} is called, it might have expired.
   \end{itemize}
 
   \+
