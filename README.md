@@ -3,7 +3,10 @@
 This is the source tree of GridCertLib, a Java library providing
 services to create a SLCS/X.509 certificate and a Grid proxy
 (optionally VOMS-enabled), given the SAML2 assertion resulting from a
-Shibboleth2 authentication.
+Shibboleth2 authentication.  The
+[presentation](docs/slides/egi-tf2011/rmurri-gridcertlib-egitf2011.pdf)
+held at the [EGI Technical Forum 2011](http://tf2011.egi.eu/) is
+probably the best exposition of the "what" and "why" of GridCertLib.
 
 The library comes with some example servlets (cf. package
 `ch.swing.gridcertlib.servlet`) that provide sample code to use the
